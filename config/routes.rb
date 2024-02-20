@@ -22,6 +22,8 @@ Rails.application.routes.draw do
 
   # CREATE
   post("/insert_board", { :controller => "boards", :action => "create" })
+
+  post("/insert_board_post", { :controller => "boards", :action => "create_post" })
           
   # READ
   get("/", controller: "boards", action: "index")
