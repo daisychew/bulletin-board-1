@@ -1,71 +1,91 @@
+<nav>
+  <a href="/">Bulletin Board</a>
+</nav>
+
+<hr>
 <div>
   <div>
     <h1>
-      Board #<%= @the_board.id %> details
+      <%= @the_board.name %>
     </h1>
-
-    <div>
-      <div>
-        <a href="/boards">
-          Go back
-        </a>
-      </div>
-
-      <div>
-        <a href="/delete_board/<%= @the_board.id %>">
-          Delete board
-        </a>
-      </div>
-    </div>
-
-    <dl>
-      <dt>
-        Name
-      </dt>
-      <dd>
-        <%= @the_board.name %>
-      </dd>
-
-      <dt>
-        Created at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_board.created_at) %> ago
-      </dd>
-
-      <dt>
-        Updated at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_board.updated_at) %> ago
-      </dd>
-    </dl>
   </div>
 </div>
-
 <hr>
 
+<h2>
+  Add a new post
+</h2>
 
-<div>
+<form action="/insert_post" method="post">
   <div>
-    <h2>
-      Edit board
-    </h2>
+    <label for="title_box">
+      Title
+    </label>
 
-    <form action="/modify_board/<%= @the_board.id %>"  method="post" >
-      <div>
-        <label for="name_box">
-          Name
-        </label>
-
-        <input type="text" id="name_box" name="query_name" value="<%= @the_board.name %>">
-      </div>
-
-      <button>
-        Update board
-      </button>
-    </form>
+    <input type="text" id="title_box" name="query_title">
   </div>
-</div>
+
+  <div>
+    <label for="body_box">
+      Body
+    </label>
+
+    <textarea id="body_box" name="query_body" rows="3"></textarea>
+  </div>
+
+  <div>
+    <label for="expires_on_box">
+      Expires on
+    </label>
+
+    <input type="date" id="expires_on_box" name="query_expires_on">
+  </div>
+
+  <input type="hidden" id="board_id_box" name="query_board_id" value=<%= @the_board.id %>>
+
+  <button>
+    Add post
+  </button>
+</form>
 
 <hr>
+
+<h2>Active posts</h2>
+
+<table border="1">
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Posted on</th>
+    <th>Expires on</th>
+  </tr>
+
+  <% Post.where(:board_id => @the_board.id).where("expires_on >= ?", Date.today).each do |post| %>
+  <tr>
+    <td><%= post.title %></td>
+    <td><%= post.body %></td>
+    <td><%= post.created_at %></td>
+    <td><%= post.expires_on %></td>
+  </tr>
+  <% end %>
+</table>
+
+<h2>Expired posts</h2>
+
+<table border="1">
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Posted on</th>
+    <th>Expired on</th>
+  </tr>
+
+  <% Post.where(:board_id => @the_board.id).where("expires_on < ?", Date.today).each do |post| %>
+  <tr>
+    <td><%= post.title %></td>
+    <td><%= post.body %></td>
+    <td><%= post.created_at %></td>
+    <td><%= post.expires_on %></td>
+  </tr>
+  <% end %>
+</table>
