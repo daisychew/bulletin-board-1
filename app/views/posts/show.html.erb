@@ -1,116 +1,91 @@
+<nav>
+  <a href="/">Bulletin Board</a>
+</nav>
+
+<hr>
 <div>
   <div>
     <h1>
-      Post #<%= @the_post.id %> details
+      <%= @the_post.title %> 
     </h1>
-
-    <div>
-      <div>
-        <a href="/posts">
-          Go back
-        </a>
-      </div>
-
-      <div>
-        <a href="/delete_post/<%= @the_post.id %>">
-          Delete post
-        </a>
-      </div>
-    </div>
-
-    <dl>
-      <dt>
-        Title
-      </dt>
-      <dd>
-        <%= @the_post.title %>
-      </dd>
-
-      <dt>
-        Body
-      </dt>
-      <dd>
-        <%= @the_post.body %>
-      </dd>
-
-      <dt>
-        Expires on
-      </dt>
-      <dd>
-        <%= @the_post.expires_on %>
-      </dd>
-
-      <dt>
-        Board
-      </dt>
-      <dd>
-        <%= @the_post.board_id %>
-      </dd>
-
-      <dt>
-        Created at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_post.created_at) %> ago
-      </dd>
-
-      <dt>
-        Updated at
-      </dt>
-      <dd>
-        <%= time_ago_in_words(@the_post.updated_at) %> ago
-      </dd>
-    </dl>
   </div>
 </div>
-
 <hr>
 
+<h2>
+  Add a new post
+</h2>
 
-<div>
+<form action="/insert_post" method="post">
   <div>
-    <h2>
-      Edit post
-    </h2>
+    <label for="title_box">
+      Title
+    </label>
 
-    <form action="/modify_post/<%= @the_post.id %>"  method="post" >
-      <div>
-        <label for="title_box">
-          Title
-        </label>
-
-        <input type="text" id="title_box" name="query_title" value="<%= @the_post.title %>">
-      </div>
-
-      <div>
-        <label for="body_box">
-          Body
-        </label>
-
-        <textarea id="body_box" name="query_body"><%= @the_post.body %></textarea>
-      </div>
-
-      <div>
-        <label for="expires_on_box">
-          Expires on
-        </label>
-
-        <input type="date" id="expires_on_box" name="query_expires_on" value="<%= @the_post.expires_on %>">
-      </div>
-
-      <div>
-        <label for="board_id_box">
-          Board
-        </label>
-
-        <input type="text" id="board_id_box" name="query_board_id" value="<%= @the_post.board_id %>">
-      </div>
-
-      <button>
-        Update post
-      </button>
-    </form>
+    <input type="text" id="title_box" name="query_title">
   </div>
-</div>
+
+  <div>
+    <label for="body_box">
+      Body
+    </label>
+
+    <textarea id="body_box" name="query_body" rows="3"></textarea>
+  </div>
+
+  <div>
+    <label for="expires_on_box">
+      Expires on
+    </label>
+
+    <input type="date" id="expires_on_box" name="query_expires_on">
+  </div>
+
+  <input type="hidden" id="board_id_box" name="query_board_id">
+
+  <button>
+    Add post
+  </button>
+</form>
 
 <hr>
+
+<h2>Active posts</h2>
+
+<table border="1">
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Posted on</th>
+    <th>Expires on</th>
+  </tr>
+
+  <tr>
+  <% Post.where("expires_on >= ?", Date.today).each do |post| %>
+    <td><%= post.title %></td>
+    <td><%= post.body %></td>
+    <td><%= post.created_at %></td>
+    <td><%= post.expires_on %></td>
+  </tr>
+  <% end %>
+</table>
+
+<h2>Expired posts</h2>
+
+<table border="1">
+  <tr>
+    <th>Title</th>
+    <th>Body</th>
+    <th>Posted on</th>
+    <th>Expired on</th>
+  </tr>
+
+  <% Post.where("expires_on < ?", Date.today).each do |post| %>
+  <tr>
+    <td><%= post.title %></td>
+    <td><%= post.body %></td>
+    <td><%= post.created_at %></td>
+    <td><%= post.expires_on %></td>
+  </tr>
+  <% end %>
+</table>
